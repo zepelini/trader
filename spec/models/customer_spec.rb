@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe User do
+RSpec.describe Customer do
   let(:fake_password) { $fake_password = Faker::String.random }
 
   subject { 
@@ -11,13 +11,15 @@ RSpec.describe User do
       password_confirmation: fake_password
     )
   }
+
+  
   context 'fields' do
-    it 'must contain a name' do
+    it 'must require a name' do
       subject.name = nil
       expect(subject).to_not be_valid
     end
 
-    it 'must contain a valid e-mail' do
+    it 'must require a valid e-mail' do
       subject.email = nil
       expect(subject).to_not be_valid
 
@@ -25,17 +27,24 @@ RSpec.describe User do
       expect(subject).to_not be_valid
     end
 
-    it 'must contain a password' do
+    it 'must require a password' do
       subject.password = nil
       expect(subject).to_not be_valid
     end
 
-    it 'must contain a password confirmation' do
+    it 'must require a password confirmation' do
       subject.password_confirmation = nil
       expect(subject).to_not be_valid
 
       subject.password = Faker::String.random
       subject.password_confirmation = Faker::String.random
+      expect(subject).to_not be_valid
+    end
+
+    it 'must only allow unique e-mails' do
+      some_database_user = described_class.order("RANDOM()").first
+
+      subject.email = some_database_user.email
       expect(subject).to_not be_valid
     end
   end
